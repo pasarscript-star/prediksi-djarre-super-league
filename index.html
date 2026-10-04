@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f4ef">
+  <title>Prediksi Djarre Super League</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17231f;
+      --muted: #738079;
+      --line: #e4e8e2;
+      --paper: #fbfcf9;
+      --canvas: #f1f3ee;
+      --green: #174d40;
+      --green-deep: #10382f;
+      --lime: #d6f27b;
+      --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--canvas); font-family: var(--sans); font-size: 14px; -webkit-font-smoothing: antialiased; }
+    button { font: inherit; }
+    .app-shell { min-height: 100vh; }
+
+    .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 3; display: flex; width: 250px; flex-direction: column; padding: 28px 18px 20px; color: #edf3ed; background: var(--green-deep); }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 0 9px; text-decoration: none; color: inherit; }
+    .brand-mark { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border-radius: 11px; color: var(--green-deep); background: var(--lime); font-family: var(--serif); font-size: 20px; font-weight: 700; }
+    .brand-name { display: grid; gap: 2px; }
+    .brand-name strong { font-size: 13px; font-weight: 650; }
+    .brand-name span { color: #9db3a8; font-size: 11px; }
+    .nav-label { margin: 49px 10px 12px; color: #89a197; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-item { display: flex; min-height: 45px; align-items: center; gap: 12px; padding: 0 11px; border: 0; border-radius: 7px; color: #b9c9c1; background: transparent; text-align: left; cursor: pointer; transition: color 160ms ease, background 160ms ease; }
+    .nav-item:hover { color: white; background: #1b493d; }
+    .nav-item[aria-current="page"] { color: var(--green-deep); background: var(--lime); font-weight: 650; }
+    .nav-icon { display: grid; width: 20px; height: 20px; place-items: center; font-size: 15px; line-height: 1; }
+    .sidebar-bottom { margin-top: auto; }
+    .feed-card { padding: 14px 13px; border: 1px solid #315a4f; border-radius: 7px; background: #173f34; }
+    .feed-heading { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 650; }
+    .feed-dot { width: 7px; height: 7px; border-radius: 50%; background: #e7a35d; }
+    .feed-card p { margin: 9px 0 0; color: #a8bbb1; font-size: 11px; line-height: 1.55; }
+    .sidebar-foot { margin: 17px 10px 0; color: #789187; font-size: 10px; }
+
+    .main { min-height: 100vh; margin-left: 250px; }
+    .topbar { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 20px; padding: 0 42px; border-bottom: 1px solid var(--line); background: rgba(251, 252, 249, 0.82); }
+    .breadcrumb { color: var(--muted); font-size: 12px; }
+    .breadcrumb b { color: var(--ink); font-weight: 600; }
+    .top-actions { display: flex; align-items: center; gap: 15px; }
+    .connection-status { display: inline-flex; min-height: 29px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #e4e8e2; border-radius: 20px; color: #69766f; background: #fff; font-size: 11px; white-space: nowrap; }
+    .connection-status i { width: 6px; height: 6px; border-radius: 50%; background: #d38a52; }
+    .today { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .content { width: min(1160px, 100%); margin: 0 auto; padding: 39px 42px 54px; }
+    .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 27px; }
+    .eyebrow { margin: 0 0 9px; color: #648074; font-size: 10px; font-weight: 700; letter-spacing: 1.25px; text-transform: uppercase; }
+    h1 { margin: 0; font-family: var(--serif); font-size: clamp(29px, 3vw, 38px); font-weight: 500; line-height: 1.12; }
+    .page-description { margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .refresh-button { display: inline-flex; min-height: 37px; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid #dfe4de; border-radius: 6px; color: #77827b; background: #f8f9f6; font-size: 11px; cursor: not-allowed; white-space: nowrap; }
+    .refresh-icon { font-size: 15px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-bottom: 19px; }
+    .overview-item { min-height: 102px; padding: 17px 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+    .overview-label { color: var(--muted); font-size: 11px; }
+    .overview-value { display: flex; align-items: baseline; gap: 8px; margin-top: 14px; }
+    .overview-value strong { font-family: var(--serif); font-size: 25px; font-weight: 500; }
+    .overview-value span { color: #8a948e; font-size: 11px; }
+    .workspace-panel { overflow: hidden; min-height: 330px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+    .panel-top { display: flex; min-height: 58px; align-items: center; justify-content: space-between; gap: 16px; padding: 0 19px; border-bottom: 1px solid var(--line); }
+    .panel-top h2 { margin: 0; font-size: 13px; font-weight: 650; }
+    .panel-meta { color: #8a948e; font-size: 10px; }
+    [hidden] { display: none !important; }
+    .table-wrap { overflow-x: auto; }
+    .standings-table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+    .standings-table th { height: 39px; padding: 0 10px; color: #7b8780; background: #f7f8f4; font-size: 9px; font-weight: 700; letter-spacing: .45px; text-align: center; text-transform: uppercase; }
+    .standings-table th:first-child, .standings-table td:first-child { width: 48px; padding-left: 17px; text-align: left; }
+    .standings-table th:nth-child(2), .standings-table td:nth-child(2) { text-align: left; }
+    .standings-table th:nth-child(2) { min-width: 190px; }
+    .standings-table td { height: 43px; padding: 0 10px; border-top: 1px solid #edf0eb; color: #56635b; text-align: center; }
+    .standings-table td:nth-child(n+3) { color: #34423a; font-variant-numeric: tabular-nums; font-weight: 650; }
+    .standings-table tbody tr:first-child { background: #f5f8ee; }
+    .standings-table tbody tr:hover { background: #f6f8f4; }
+    .standings-table td:first-child { color: #87928a; font-variant-numeric: tabular-nums; }
+    .standings-table .team-cell { color: var(--ink); font-size: 13px; font-weight: 750; }
+    .standings-table .points-cell { color: var(--green); font-weight: 750; }
+    .standings-table .negative { color: #b45d45; }
+    .team-penalty { display: block; margin-top: 3px; color: #aa6c4d; font-size: 9px; font-weight: 500; }
+    .fixture-view { padding: 0 19px; }
+    .fixture-day + .fixture-day { border-top: 1px solid var(--line); }
+    .fixture-day-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 2px 9px; }
+    .fixture-day-heading h3 { margin: 0; font-family: var(--serif); font-size: 17px; font-weight: 500; }
+    .fixture-day-heading span { color: var(--muted); font-size: 10px; }
+    .fixture-row { display: grid; grid-template-columns: 74px minmax(0, 1fr) 82px; min-height: 53px; align-items: center; gap: 12px; border-top: 1px solid #edf0eb; }
+    .fixture-time { color: var(--green); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .fixture-teams { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 12px; }
+    .fixture-teams strong { color: var(--ink); font-weight: 650; }
+    .fixture-teams strong:last-child { text-align: right; }
+    .fixture-teams span { color: #9aa49d; font-size: 10px; text-align: center; }
+    .fixture-status { color: #87928a; font-size: 10px; text-align: right; }
+    .live-view { padding: 18px 19px 20px; }
+    .live-feed-state { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px; color: #718078; font-size: 10px; }
+    .live-feed-state strong { color: var(--ink); font-size: 11px; font-weight: 650; }
+    .live-empty { display: grid; min-height: 215px; align-content: center; justify-items: center; padding: 28px 18px; text-align: center; }
+    .live-empty-mark { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 14px; border-radius: 50%; color: #9a553f; background: #f8eae4; font-size: 16px; }
+    .live-empty h3 { margin: 0; font-family: var(--serif); font-size: 19px; font-weight: 500; }
+    .live-empty p { max-width: 420px; margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .live-match-list { display: grid; gap: 12px; }
+    .live-match { overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+    .live-match-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 15px; border-bottom: 1px solid var(--line); }
+    .live-match-phase { display: flex; align-items: center; gap: 8px; color: #a34835; font-size: 10px; font-weight: 750; }
+    .live-pulse { width: 7px; height: 7px; border-radius: 50%; background: #cf563f; box-shadow: 0 0 0 3px #f8e9e4; }
+    .live-match-updated { color: #869189; font-size: 9px; text-align: right; }
+    .live-match-score { display: grid; grid-template-columns: minmax(0, 1fr) 82px minmax(0, 1fr); align-items: center; gap: 14px; padding: 21px 18px; }
+    .live-team { color: var(--ink); font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+    .live-team:last-child { text-align: right; }
+    .live-score { color: var(--ink); font-size: 27px; font-variant-numeric: tabular-nums; font-weight: 750; text-align: center; white-space: nowrap; }
+    .live-minute { grid-column: 1 / -1; margin-top: -10px; color: #b24e39; font-size: 10px; font-weight: 700; text-align: center; }
+    .live-match-updated[data-stale="true"] { color: #b24e39; font-weight: 700; }
+    .live-stats { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .live-stats th, .live-stats td { height: 31px; padding: 0 12px; border-top: 1px solid #edf0eb; text-align: center; }
+    .live-stats thead th { height: 30px; color: #65736b; background: #f7f8f5; font-weight: 650; }
+    .live-stats th:first-child { width: 34%; text-align: left; }
+    .live-stats tbody th { color: #7b8780; font-weight: 500; text-align: left; }
+    .live-stats td { color: #34423a; font-variant-numeric: tabular-nums; font-weight: 650; }
+    .nav-live-count { display: grid; min-width: 18px; height: 18px; place-items: center; margin-left: auto; padding: 0 5px; border-radius: 9px; color: #fff; background: #c9513c; font-size: 9px; font-variant-numeric: tabular-nums; font-weight: 750; }
+    .nav-live-count[hidden] { display: none; }
+    .prediction-view { padding: 0 19px; }
+    .prediction-card { padding: 16px 0 18px; border-top: 1px solid var(--line); }
+    .prediction-card:first-child { border-top: 0; }
+    .prediction-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .prediction-fixture { display: grid; grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr); align-items: center; gap: 8px; min-width: 0; }
+    .prediction-fixture strong { color: var(--ink); font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+    .prediction-fixture strong:last-child { text-align: right; }
+    .prediction-fixture span { color: #9aa49d; font-size: 10px; text-align: center; }
+    .prediction-context { flex: 0 0 auto; color: #66736b; font-size: 10px; text-align: right; }
+    .prediction-context span { display: block; margin-top: 4px; color: #a66a4b; }
+    .prediction-verdict { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 10px 12px; border-left: 3px solid var(--green); color: var(--ink); background: #f2f6ed; }
+    .prediction-verdict span { display: block; color: #748078; font-size: 9px; }
+    .prediction-verdict strong { display: block; margin-top: 3px; font-size: 12px; font-weight: 750; }
+    .prediction-result { margin-top: 14px; }
+    .prediction-result-title { display: flex; justify-content: space-between; margin-bottom: 7px; color: #66736b; font-size: 10px; }
+    .result-bar { display: flex; overflow: hidden; height: 6px; border-radius: 4px; background: #e9ece7; }
+    .result-bar span { display: block; height: 100%; }
+    .result-home { background: var(--green); }
+    .result-draw { background: #d8b464; }
+    .result-away { background: var(--orange); }
+    .result-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 7px; }
+    .result-key span { color: #748078; font-size: 10px; }
+    .result-key strong { display: block; margin-top: 3px; color: var(--ink); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .prediction-insights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; margin-top: 12px; }
+    .prediction-insight { min-width: 0; padding: 10px 0 3px; border-top: 1px solid #edf0eb; }
+    .prediction-insight span { display: block; color: #7b8780; font-size: 9px; line-height: 1.4; }
+    .prediction-insight strong { display: block; margin-top: 4px; color: #34423a; font-size: 11px; font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; }
+    .prediction-insight .unavailable { color: #8a7669; font-weight: 500; }
+    .prediction-tabs { display: flex; gap: 20px; padding: 0 19px; border-bottom: 1px solid var(--line); }
+    .prediction-tab { min-height: 45px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; color: #78847c; background: transparent; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .prediction-tab[aria-selected="true"] { border-bottom-color: var(--green); color: var(--green); }
+    .outcome-view { padding: 0 19px; }
+    .period-note { margin: 13px 0 0; color: #78847c; font-size: 10px; line-height: 1.5; }
+    .outcome-card { padding: 16px 0; border-top: 1px solid var(--line); }
+    .outcome-card:first-child { border-top: 0; }
+    .outcome-card-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .outcome-fixture { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 12px; }
+    .outcome-fixture strong { color: var(--ink); font-weight: 700; }
+    .outcome-fixture span { color: #9aa49d; font-size: 10px; }
+    .outcome-date { margin-top: 5px; color: #78847c; font-size: 10px; }
+    .outcome-pick { flex: 0 0 auto; color: var(--green); font-size: 11px; font-weight: 750; text-align: right; }
+    .outcome-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .outcome-option { padding: 9px 10px; border-top: 2px solid #e6eae4; background: #f7f8f5; }
+    .outcome-option[data-selected="true"] { border-top-color: var(--green); background: #f0f5e8; }
+    .outcome-option span { display: block; color: #758078; font-size: 9px; line-height: 1.4; }
+    .outcome-option strong { display: block; margin-top: 5px; color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .report-view { padding: 15px 19px 19px; }
+    .report-period-group + .report-period-group { margin-top: 16px; }
+    .report-period-group h3 { margin: 0 0 8px; color: #4e5d54; font-size: 11px; font-weight: 700; }
+    .report-summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding-bottom: 14px; }
+    .report-summary-item { padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fbfcf9; }
+    .report-summary-item span { display: block; color: #748078; font-size: 10px; }
+    .report-summary-item strong { display: block; margin-top: 6px; color: var(--ink); font-size: 19px; font-variant-numeric: tabular-nums; }
+    .report-entry { padding: 15px 0; border-top: 1px solid var(--line); }
+    .report-entry-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .report-status-group { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .report-fixture { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 12px; }
+    .report-fixture strong { color: var(--ink); font-weight: 700; }
+    .report-fixture span { color: #9aa49d; font-size: 10px; }
+    .report-status { flex: 0 0 auto; padding: 5px 8px; border-radius: 4px; color: #775f32; background: #f5efd9; font-size: 10px; font-weight: 650; }
+    .report-status[data-status="correct"] { color: #24553d; background: #e5f1e7; }
+    .report-status[data-status="incorrect"] { color: #8a4436; background: #f6e7e2; }
+    @media (max-width: 900px) {
+      .report-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .report-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .report-period-details { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .report-details span { display: block; color: #7b8780; font-size: 9px; }
+    .report-details strong { display: block; margin-top: 4px; color: #34423a; font-size: 11px; line-height: 1.4; }
+    .report-message { margin: 11px 0 0; color: #66736b; font-size: 11px; line-height: 1.5; }
+    .empty-state { display: grid; min-height: 270px; align-content: center; justify-items: center; padding: 34px 22px; text-align: center; }
+    .empty-mark { display: grid; width: 48px; height: 48px; place-items: center; margin-bottom: 16px; border: 1px solid #dfe7dd; border-radius: 50%; color: var(--green); background: #f1f6e9; font-family: var(--serif); font-size: 22px; }
+    .empty-state h3 { margin: 0; font-family: var(--serif); font-size: 20px; font-weight: 500; }
+    .empty-state p { max-width: 420px; margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .source-note { display: flex; align-items: flex-start; gap: 10px; margin-top: 17px; padding: 13px 15px; border-left: 2px solid #d7a760; color: #68746d; background: #f6f6f0; font-size: 11px; line-height: 1.55; }
+    .source-note strong { color: #3d4a43; font-weight: 650; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 218px; }
+      .main { margin-left: 218px; }
+      .topbar { padding: 0 25px; }
+      .content { padding: 32px 25px 42px; }
+    }
+
+    @media (max-width: 640px) {
+      .sidebar { position: sticky; inset: 0 0 auto; width: 100%; height: auto; padding: 11px 14px 10px; }
+      .brand { padding: 0 2px; }
+      .brand-mark { width: 34px; height: 34px; flex-basis: 34px; }
+      .brand-name strong { font-size: 12px; }
+      .brand-name span { font-size: 10px; }
+      .nav-label, .sidebar-bottom { display: none; }
+      .nav-list { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; margin-top: 10px; }
+      .nav-item { min-width: 0; min-height: 38px; justify-content: center; gap: 4px; padding: 0 2px; font-size: 10px; }
+      .nav-icon { width: 14px; flex: 0 0 14px; font-size: 12px; }
+      .nav-live-count { min-width: 15px; height: 15px; padding: 0 3px; font-size: 8px; }
+      .main { margin-left: 0; }
+      .topbar { min-height: 49px; padding: 0 17px; }
+      .top-actions { gap: 9px; }
+      .today { font-size: 10px; }
+      .connection-status { min-height: 26px; padding: 0 8px; font-size: 10px; }
+      .content { padding: 27px 17px 34px; }
+      .page-heading { align-items: flex-start; margin-bottom: 20px; }
+      .page-heading > div { min-width: 0; }
+      .page-description { max-width: 34ch; font-size: 12px; }
+      .refresh-button { width: 37px; min-width: 37px; justify-content: center; padding: 0; overflow: hidden; font-size: 0; }
+      .refresh-icon { font-size: 16px; }
+      .overview-grid { gap: 8px; }
+      .overview-item { min-height: 88px; padding: 13px 11px; }
+      .overview-label { font-size: 10px; line-height: 1.35; }
+      .overview-value { gap: 5px; margin-top: 13px; }
+      .overview-value strong { font-size: 22px; }
+      .overview-value span { font-size: 9px; }
+      .workspace-panel { min-height: 315px; }
+      .standings-table { min-width: 690px; }
+      .fixture-view { padding: 0 13px; }
+      .fixture-row { grid-template-columns: 55px minmax(0, 1fr); gap: 8px; }
+      .fixture-teams { grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr); gap: 4px; font-size: 10px; }
+      .fixture-status { display: none; }
+      .live-view { padding: 13px; }
+      .live-feed-state { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .live-match-head { padding: 10px 11px; }
+      .live-match-score { grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr); gap: 7px; padding: 17px 11px; }
+      .live-team { font-size: 11px; }
+      .live-score { font-size: 22px; }
+      .live-stats th, .live-stats td { padding: 0 7px; font-size: 9px; }
+      .live-stats th:first-child { width: 40%; }
+      .prediction-view { padding: 0 13px; }
+      .prediction-tabs { gap: 17px; padding: 0 13px; }
+      .outcome-view { padding: 0 13px; }
+      .prediction-tab { min-height: 43px; font-size: 10px; }
+      .outcome-card-header { align-items: flex-start; gap: 8px; }
+      .outcome-fixture { gap: 5px; font-size: 10px; }
+      .outcome-pick { max-width: 120px; font-size: 10px; line-height: 1.4; }
+      .outcome-options { gap: 5px; }
+      .outcome-option { padding: 8px 6px; }
+      .outcome-option span { font-size: 8px; }
+      .outcome-option strong { font-size: 12px; }
+      .prediction-header { display: grid; gap: 7px; }
+      .prediction-context { display: flex; justify-content: space-between; gap: 8px; text-align: left; }
+      .prediction-context span { margin-top: 0; text-align: right; }
+      .prediction-fixture { gap: 5px; }
+      .prediction-fixture strong { font-size: 11px; }
+      .prediction-insights { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+      .result-key { gap: 4px; }
+      .result-key span { font-size: 9px; }
+      .report-view { padding: 12px 13px 16px; }
+      .report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+      .report-summary-item { padding: 9px 7px; }
+      .report-summary-item span { font-size: 9px; }
+      .report-summary-item strong { font-size: 17px; }
+      .report-entry-header { align-items: flex-start; }
+      .report-fixture { gap: 5px; font-size: 10px; }
+      .report-status { max-width: 105px; padding: 5px 6px; text-align: center; white-space: normal; }
+      .report-details { gap: 7px; }
+      .report-period-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .report-details span { font-size: 8px; }
+      .report-details strong { font-size: 10px; }
+      .report-message { font-size: 10px; }
+      .panel-top { padding: 0 14px; }
+      .panel-meta { font-size: 9px; text-align: right; }
+      .empty-state { min-height: 255px; }
+      .source-note { font-size: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi utama">
+      <a class="brand" href="#overview" aria-label="Prediksi Djarre Super League">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span class="brand-name"><strong>Prediksi Djarre</strong><span>Super League</span></span>
+      </a>
+
+      <p class="nav-label">Kompetisi</p>
+      <nav class="nav-list" aria-label="Menu kompetisi">
+        <button class="nav-item" type="button" data-page="standings" aria-current="page"><span class="nav-icon" aria-hidden="true">▤</span><span>Klasemen</span></button>
+        <button class="nav-item" type="button" data-page="live"><span class="nav-icon" aria-hidden="true">◉</span><span>Live Skor</span><span class="nav-live-count" id="live-nav-count" hidden>0</span></button>
+        <button class="nav-item" type="button" data-page="schedule"><span class="nav-icon" aria-hidden="true">▦</span><span>Jadwal</span></button>
+        <button class="nav-item" type="button" data-page="predictions"><span class="nav-icon" aria-hidden="true">⌁</span><span>Prediksi</span></button>
+        <button class="nav-item" type="button" data-page="report"><span class="nav-icon" aria-hidden="true">▧</span><span>Report</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="feed-card">
+          <div class="feed-heading"><span class="feed-dot" aria-hidden="true"></span><span>Snapshot data</span></div>
+          <p>Flashscore · 4 Okt 2026, klasemen 22.04 WIB, jadwal 22.13 WIB. Sinkronisasi otomatis belum aktif.</p>
+        </div>
+        <p class="sidebar-foot">Prediksi Djarre Super League</p>
+      </div>
+    </aside>
+
+    <main class="main" id="overview">
+      <header class="topbar">
+        <div class="breadcrumb">Kompetisi <span aria-hidden="true">/</span> <b id="breadcrumb-page">Klasemen</b></div>
+        <div class="top-actions">
+          <span class="connection-status"><i aria-hidden="true"></i>Snapshot · 4 Okt 2026</span>
+          <time class="today" id="today"></time>
+        </div>
+      </header>
+
+      <section class="content" aria-live="polite">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Liga Indonesia · Pusat analisis</p>
+            <h1 id="page-title">Klasemen</h1>
+            <p class="page-description" id="page-description">Posisi dan performa seluruh tim dalam kompetisi.</p>
+          </div>
+          <button class="refresh-button" type="button" disabled title="Sinkronisasi otomatis belum diaktifkan"><span class="refresh-icon" aria-hidden="true">↻</span>Perbarui data</button>
+        </div>
+
+        <div class="overview-grid" id="overview-grid" aria-label="Ringkasan data kompetisi">
+          <section class="overview-item"><div class="overview-label">Tim terdaftar</div><div class="overview-value"><strong>18</strong><span>tim</span></div></section>
+          <section class="overview-item"><div class="overview-label">Pertandingan dimainkan</div><div class="overview-value"><strong>28</strong><span>laga</span></div></section>
+          <section class="overview-item"><div class="overview-label">Snapshot terakhir</div><div class="overview-value"><strong>4 Okt</strong><span>22.04 WIB</span></div></section>
+        </div>
+
+        <section class="workspace-panel" aria-labelledby="panel-title">
+          <div class="panel-top"><h2 id="panel-title">Klasemen kompetisi</h2><span class="panel-meta" id="panel-meta">Snapshot · 4 Okt 2026, 22.04 WIB</span></div>
+          <div class="table-wrap" id="standings-view" tabindex="0" aria-label="Tabel klasemen, dapat digeser horizontal">
+            <table class="standings-table">
+              <caption class="visually-hidden">Klasemen Super League Indonesia musim 2026/2027</caption>
+              <thead><tr><th scope="col">Pos</th><th scope="col">Tim</th><th scope="col">Main</th><th scope="col">M</th><th scope="col">S</th><th scope="col">K</th><th scope="col">GM-GK</th><th scope="col">SG</th><th scope="col">Poin</th></tr></thead>
+              <tbody id="standings-body"></tbody>
+            </table>
+          </div>
+          <div class="live-view" id="live-view" hidden>
+            <div class="live-feed-state"><strong id="live-feed-label">Feed live belum tersambung</strong><span id="live-last-updated">Menunggu data pertandingan</span></div>
+            <div class="live-empty" id="live-empty"><span class="live-empty-mark" aria-hidden="true">●</span><h3 id="live-empty-title">Feed live belum terhubung</h3><p id="live-empty-description">Saat feed aktif, semua pertandingan yang sedang berlangsung akan tampil di sini bersama menit, skor, dan statistik live.</p></div>
+            <div class="live-match-list" id="live-match-list" aria-live="polite"></div>
+          </div>
+          <div class="fixture-view" id="schedule-view" hidden>
+            <div id="fixture-list"></div>
+          </div>
+          <div class="prediction-view" id="predictions-view" hidden>
+            <div class="prediction-tabs" role="tablist" aria-label="Tampilan prediksi">
+              <button class="prediction-tab" id="prediction-details-tab" type="button" role="tab" aria-selected="true" aria-controls="prediction-details-panel">Rincian</button>
+              <button class="prediction-tab" id="prediction-first-half-tab" type="button" role="tab" aria-selected="false" aria-controls="prediction-first-half-panel">Prediksi Babak Pertama</button>
+              <button class="prediction-tab" id="prediction-second-half-tab" type="button" role="tab" aria-selected="false" aria-controls="prediction-second-half-panel">Prediksi Babak Kedua</button>
+            </div>
+            <div id="prediction-details-panel" role="tabpanel" aria-labelledby="prediction-details-tab"><div id="prediction-list"></div></div>
+            <div class="outcome-view" id="prediction-first-half-panel" role="tabpanel" aria-labelledby="prediction-first-half-tab" hidden><p class="period-note">Estimasi babak pertama memakai 45% dari perkiraan gol pertandingan. Keyakinan rendah sampai data gol per menit tersedia.</p><div id="first-half-list"></div></div>
+            <div class="outcome-view" id="prediction-second-half-panel" role="tabpanel" aria-labelledby="prediction-second-half-tab" hidden><p class="period-note">Estimasi babak kedua memakai 55% dari perkiraan gol pertandingan. Skor babak kedua dihitung terpisah dari babak pertama.</p><div id="second-half-list"></div></div>
+          </div>
+          <div class="report-view" id="report-view" hidden>
+            <section class="report-period-group"><h3>Hasil penuh · Rincian</h3><div class="report-summary"><div class="report-summary-item"><span>Hasil cocok</span><strong id="report-outcome-correct">0</strong></div><div class="report-summary-item"><span>Hasil meleset</span><strong id="report-outcome-incorrect">0</strong></div><div class="report-summary-item"><span>Skor tepat</span><strong id="report-score-correct">0</strong></div><div class="report-summary-item"><span>Skor meleset</span><strong id="report-score-incorrect">0</strong></div></div></section>
+            <section class="report-period-group"><h3>Babak pertama</h3><div class="report-summary"><div class="report-summary-item"><span>Cocok</span><strong id="report-first-correct">0</strong></div><div class="report-summary-item"><span>Meleset</span><strong id="report-first-incorrect">0</strong></div><div class="report-summary-item"><span>Menunggu jeda</span><strong id="report-first-pending">0</strong></div></div></section>
+            <section class="report-period-group"><h3>Babak kedua</h3><div class="report-summary"><div class="report-summary-item"><span>Cocok</span><strong id="report-second-correct">0</strong></div><div class="report-summary-item"><span>Meleset</span><strong id="report-second-incorrect">0</strong></div><div class="report-summary-item"><span>Menunggu akhir</span><strong id="report-second-pending">0</strong></div></div></section>
+            <div id="report-list"></div>
+          </div>
+        </section>
+
+        <div class="source-note"><span aria-hidden="true">i</span><span id="source-note-text"><strong>Snapshot klasemen, bukan live feed.</strong> Diambil 4 Oktober 2026 pukul 22.04 WIB dari <a href="https://www.flashscore.com/football/indonesia/super-league/standings/A13mN8cC/standings/overall/" target="_blank" rel="noreferrer">Flashscore</a>. Java United dan Isenmulang Kalteng terkena pengurangan 2 poin. Sinkronisasi otomatis belum aktif.</span></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const pages = {
+      standings: {
+        label: "Klasemen",
+        description: "Posisi dan performa seluruh tim dalam kompetisi.",
+        panel: "Klasemen kompetisi",
+        emptyTitle: "Data klasemen belum tersedia",
+        emptyDescription: "Data klasemen belum tersedia.",
+        meta: "Snapshot · 4 Okt 2026, 22.04 WIB",
+        sourceNote: "<strong>Snapshot klasemen, bukan live feed.</strong> Diambil 4 Oktober 2026 pukul 22.04 WIB dari <a href=\"https://www.flashscore.com/football/indonesia/super-league/standings/A13mN8cC/standings/overall/\" target=\"_blank\" rel=\"noreferrer\">Flashscore</a>. Java United dan Isenmulang Kalteng terkena pengurangan 2 poin. Sinkronisasi otomatis belum aktif."
+      },
+      live: {
+        label: "Live Skor",
+        description: "Semua pertandingan yang sedang berlangsung dan statistik terkini.",
+        panel: "Pertandingan live",
+        meta: "Feed belum tersambung",
+        sourceNote: "<strong>Feed live belum tersambung.</strong> Pembaruan cepat memerlukan sumber skor real-time berizin melalui WebSocket atau SSE; tanpa feed, skor tidak ditampilkan sebagai live."
+      },
+      schedule: {
+        label: "Jadwal",
+        description: "Enam pertandingan dalam rentang 4–10 Oktober 2026.",
+        panel: "Jadwal 7 hari",
+        emptyTitle: "Tidak ada laga terjadwal",
+        emptyDescription: "Belum ada pertandingan yang memenuhi rentang tujuh hari ini.",
+        meta: "6 laga · 4–10 Okt 2026",
+        sourceNote: "<strong>Snapshot jadwal, bukan live feed.</strong> Diambil 4 Oktober 2026 pukul 22.13 WIB dari <a href=\"https://www.flashscore.com/football/indonesia/super-league/fixtures/\" target=\"_blank\" rel=\"noreferrer\">Flashscore</a>. Waktu sumber dikonversi dari WITA ke WIB. Sinkronisasi otomatis belum aktif."
+      },
+      predictions: {
+        label: "Prediksi",
+        description: "Rincian dan estimasi peluang untuk setiap babak pertandingan.",
+        panel: "Prediksi pertandingan",
+        meta: "Poisson baseline · keyakinan rendah",
+        sourceNote: "<strong>Baseline eksperimental, bukan prediksi AI terlatih.</strong> Prediksi babak membagi estimasi gol 45%/55% karena data gol per babak belum tersedia. Pembaruan live dan evaluasi babak menunggu feed skor jeda dan akhir. Akurasi belum diuji dengan backtest."
+      },
+      report: {
+        label: "Report",
+        description: "Cek kecocokan hasil penuh, babak pertama, dan babak kedua.",
+        panel: "Laporan prediksi",
+        meta: "Menunggu hasil final",
+        sourceNote: "<strong>Feed skor live belum terhubung.</strong> Laporan babak pertama memerlukan skor jeda; laporan babak kedua memerlukan skor jeda dan skor akhir yang terverifikasi."
+      }
+    };
+
+    const standings = [
+      ["Dewa United", 4, 3, 1, 0, 8, 4, 4, 10],
+      ["Madura United", 3, 3, 0, 0, 7, 2, 5, 9],
+      ["Persija Jakarta", 3, 3, 0, 0, 4, 1, 3, 9],
+      ["Borneo", 4, 2, 0, 2, 3, 4, -1, 6],
+      ["Persib Bandung", 3, 2, 0, 1, 6, 4, 2, 6],
+      ["Bali United", 3, 2, 0, 1, 6, 3, 3, 6],
+      ["Arema FC", 3, 1, 2, 0, 8, 4, 4, 5],
+      ["FC Bhayangkara", 3, 1, 2, 0, 5, 3, 2, 5],
+      ["Persita", 3, 1, 2, 0, 6, 5, 1, 5],
+      ["Persebaya", 3, 1, 2, 0, 3, 2, 1, 5],
+      ["Persik Kediri", 3, 1, 1, 1, 3, 2, 1, 4],
+      ["PSM Makassar", 3, 0, 2, 1, 6, 8, -2, 2],
+      ["Garudayaksa", 3, 0, 2, 1, 2, 4, -2, 2],
+      ["PSIM Yogyakarta", 3, 0, 1, 2, 2, 4, -2, 1],
+      ["PSS Sleman", 3, 0, 0, 3, 3, 7, -4, 0],
+      ["Persijap Jepara", 3, 0, 0, 3, 1, 5, -4, 0],
+      ["Java United", 3, 0, 1, 2, 3, 5, -2, -1, 2],
+      ["Isenmulang Kalteng", 3, 0, 0, 3, 1, 10, -9, -2, 2]
+    ];
+
+    const fixtures = [
+      ["2026-10-09", "Jumat, 9 Oktober", "15.30", "Persik Kediri", "Madura United"],
+      ["2026-10-09", "Jumat, 9 Oktober", "19.00", "Isenmulang Kalteng", "Persebaya"],
+      ["2026-10-10", "Sabtu, 10 Oktober", "15.30", "Arema FC", "FC Bhayangkara"],
+      ["2026-10-10", "Sabtu, 10 Oktober", "15.30", "Persita", "Garudayaksa"],
+      ["2026-10-10", "Sabtu, 10 Oktober", "15.30", "PSIM Yogyakarta", "Persija Jakarta"],
+      ["2026-10-10", "Sabtu, 10 Oktober", "19.00", "Bali United", "Persijap Jepara"]
+    ];
+
+    const fixtureGroups = fixtures.reduce((groups, fixture) => {
+      const [date, label] = fixture;
+      groups[date] ??= { label, matches: [] };
+      groups[date].matches.push(fixture);
+      return groups;
+    }, {});
+
+    document.querySelector("#fixture-list").innerHTML = Object.values(fixtureGroups).map((group) => `
+      <section class="fixture-day" aria-label="${group.label}">
+        <div class="fixture-day-heading"><h3>${group.label}</h3><span>${group.matches.length} pertandingan</span></div>
+        ${group.matches.map(([, , time, home, away]) => `
+          <article class="fixture-row">
+            <time class="fixture-time">${time} WIB</time>
+            <div class="fixture-teams"><strong>${home}</strong><span>vs</span><strong>${away}</strong></div>
+            <span class="fixture-status">Terjadwal</span>
+          </article>
+        `).join("")}
+      </section>
+    `).join("");
+
+    const liveStatRows = [
+      ["possession", "Penguasaan bola", "%"],
+      ["shots", "Tembakan", ""],
+      ["shotsOnTarget", "Tepat sasaran", ""],
+      ["corners", "Sepak pojok", ""],
+      ["fouls", "Pelanggaran", ""],
+      ["yellowCards", "Kartu kuning", ""],
+      ["redCards", "Kartu merah", ""]
+    ];
+    const livePhaseLabels = { "1H": "Babak pertama", HT: "Jeda babak", "2H": "Babak kedua" };
+    const makeLiveNode = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const formatLiveUpdateTime = (value) => {
+      const updatedAt = new Date(value ?? Date.now());
+      if (Number.isNaN(updatedAt.getTime())) return "Waktu update tidak tersedia";
+      return `Update ${new Intl.DateTimeFormat("id-ID", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Asia/Jakarta"
+      }).format(updatedAt)} WIB`;
+    };
+
+    const renderLiveMatches = (matches, receivedAt) => {
+      const activeStates = new Set(["LIVE", "1H", "HT", "2H", "ET", "P", "IN_PLAY", "IN-PLAY", "IN PROGRESS"]);
+      const activeMatches = matches.filter((match) => {
+        const state = String(match.status ?? "").toUpperCase();
+        return activeStates.has(state) || activeStates.has(String(match.period ?? "").toUpperCase()) || Number.isFinite(match.minute);
+      });
+      const list = document.querySelector("#live-match-list");
+      const fragment = document.createDocumentFragment();
+
+      activeMatches.forEach((match) => {
+        const card = makeLiveNode("article", "live-match");
+        const header = makeLiveNode("header", "live-match-head");
+        const phase = makeLiveNode("div", "live-match-phase");
+        const phaseName = livePhaseLabels[match.period] ?? (match.status === "HT" ? "Jeda babak" : "Sedang berlangsung");
+        phase.append(makeLiveNode("span", "live-pulse"), document.createTextNode(phaseName));
+        const updateEpoch = new Date(match.updatedAt ?? receivedAt ?? Date.now()).getTime();
+        const safeUpdateEpoch = Number.isFinite(updateEpoch) ? updateEpoch : Date.now();
+        const updateTime = makeLiveNode("time", "live-match-updated", formatLiveUpdateTime(new Date(safeUpdateEpoch)));
+        updateTime.dateTime = new Date(safeUpdateEpoch).toISOString();
+        updateTime.dataset.updatedAt = String(safeUpdateEpoch);
+        header.append(phase, updateTime);
+
+        const score = makeLiveNode("div", "live-match-score");
+        score.append(
+          makeLiveNode("strong", "live-team", match.homeName ?? "Tuan rumah"),
+          makeLiveNode("div", "live-score", `${Number.isInteger(match.homeScore) ? match.homeScore : "–"} – ${Number.isInteger(match.awayScore) ? match.awayScore : "–"}`),
+          makeLiveNode("strong", "live-team", match.awayName ?? "Tim tamu")
+        );
+        const minuteText = typeof match.minute === "number" ? `${match.minute}'` : match.minute ? `${match.minute}'` : phaseName;
+        score.append(makeLiveNode("div", "live-minute", minuteText));
+
+        const stats = makeLiveNode("table", "live-stats");
+        stats.setAttribute("aria-label", `Statistik ${match.homeName ?? "tuan rumah"} melawan ${match.awayName ?? "tim tamu"}`);
+        const statsHead = makeLiveNode("thead");
+        const headRow = makeLiveNode("tr");
+        headRow.append(makeLiveNode("th", "", "Statistik"), makeLiveNode("th", "", match.homeName ?? "Tuan rumah"), makeLiveNode("th", "", match.awayName ?? "Tim tamu"));
+        statsHead.append(headRow);
+        const statsBody = makeLiveNode("tbody");
+
+        liveStatRows.forEach(([key, label, unit]) => {
+          const row = makeLiveNode("tr");
+          const homeValue = match.stats?.home?.[key];
+          const awayValue = match.stats?.away?.[key];
+          const formatValue = (value) => value === undefined || value === null ? "—" : `${value}${unit && !String(value).endsWith(unit) ? unit : ""}`;
+          row.append(makeLiveNode("th", "", label), makeLiveNode("td", "", formatValue(homeValue)), makeLiveNode("td", "", formatValue(awayValue)));
+          statsBody.append(row);
+        });
+        stats.append(statsHead, statsBody);
+        card.append(header, score, stats);
+        fragment.append(card);
+      });
+
+      list.replaceChildren(fragment);
+      document.querySelector("#live-nav-count").textContent = activeMatches.length;
+      document.querySelector("#live-nav-count").hidden = activeMatches.length === 0;
+      document.querySelector("#live-empty").hidden = activeMatches.length > 0;
+      document.querySelector("#live-empty-title").textContent = "Tidak ada pertandingan sedang berlangsung";
+      document.querySelector("#live-empty-description").textContent = "Panel akan menampilkan semua laga aktif saat feed mengirim pembaruan.";
+      document.querySelector("#live-feed-label").textContent = activeMatches.length ? `${activeMatches.length} pertandingan live` : "Feed aktif · tidak ada laga live";
+      document.querySelector("#live-last-updated").textContent = formatLiveUpdateTime(receivedAt);
+      document.querySelector("#panel-meta").textContent = activeMatches.length ? `${activeMatches.length} pertandingan live` : "Tidak ada laga live";
+      document.querySelector("#source-note-text").textContent = `Feed live aktif. ${formatLiveUpdateTime(receivedAt)}.`;
+    };
+
+    document.addEventListener("live-matches-updated", (event) => {
+      const { matches, updatedAt } = event.detail ?? {};
+      if (Array.isArray(matches)) renderLiveMatches(matches, updatedAt);
+    });
+
+    const refreshLiveStaleness = () => {
+      document.querySelectorAll(".live-match-updated[data-updated-at]").forEach((node) => {
+        const updatedAt = Number(node.dataset.updatedAt);
+        const stale = Date.now() - updatedAt > 60_000;
+        node.dataset.stale = String(stale);
+        node.textContent = stale ? `Data tertinggal · ${formatLiveUpdateTime(new Date(updatedAt))}` : formatLiveUpdateTime(new Date(updatedAt));
+      });
+    };
+
+    window.setInterval(refreshLiveStaleness, 15_000);
+
+    const teamStats = new Map(standings.map((row) => [row[0], {
+      played: row[1],
+      goalsFor: row[5],
+      goalsAgainst: row[6]
+    }]));
+    const totalPlayed = standings.reduce((total, team) => total + team[1], 0);
+    const averageTeamGoals = standings.reduce((total, team) => total + team[5], 0) / totalPlayed;
+    const smoothedRate = (goals, played) => (goals + averageTeamGoals * 3) / (played + 3);
+    const poisson = (rate, maximum = 9) => {
+      const probabilities = [Math.exp(-rate)];
+      for (let goals = 1; goals <= maximum; goals += 1) {
+        probabilities.push(probabilities[goals - 1] * rate / goals);
+      }
+      return probabilities;
+    };
+    const asPercentages = (values) => {
+      const total = Object.values(values).reduce((sum, value) => sum + value, 0);
+      const percentages = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, Math.round(value / total * 100)]));
+      const difference = 100 - Object.values(percentages).reduce((sum, value) => sum + value, 0);
+      const largest = Object.keys(values).reduce((best, key) => values[key] > values[best] ? key : best);
+      percentages[largest] += difference;
+      return percentages;
+    };
+
+    const predictMatch = ([, , , homeName, awayName]) => {
+      const home = teamStats.get(homeName);
+      const away = teamStats.get(awayName);
+      const homeAttack = smoothedRate(home.goalsFor, home.played) / averageTeamGoals;
+      const awayAttack = smoothedRate(away.goalsFor, away.played) / averageTeamGoals;
+      const homeDefense = smoothedRate(home.goalsAgainst, home.played) / averageTeamGoals;
+      const awayDefense = smoothedRate(away.goalsAgainst, away.played) / averageTeamGoals;
+      const homeGoals = averageTeamGoals * homeAttack * awayDefense * 1.08;
+      const awayGoals = averageTeamGoals * awayAttack * homeDefense * 0.92;
+      const predictPeriod = (homeRate, awayRate) => {
+        const homeDistribution = poisson(homeRate);
+        const awayDistribution = poisson(awayRate);
+        const outcomes = { home: 0, draw: 0, away: 0 };
+        const outcomeScores = {
+          home: { home: 0, away: 0, probability: -1 },
+          draw: { home: 0, away: 0, probability: -1 },
+          away: { home: 0, away: 0, probability: -1 }
+        };
+        let mostLikelyScore = { home: 0, away: 0, probability: -1 };
+
+        homeDistribution.forEach((homeProbability, homeScore) => {
+          awayDistribution.forEach((awayProbability, awayScore) => {
+            const probability = homeProbability * awayProbability;
+            const outcome = homeScore > awayScore ? "home" : homeScore === awayScore ? "draw" : "away";
+            outcomes[outcome] += probability;
+            if (probability > outcomeScores[outcome].probability) outcomeScores[outcome] = { home: homeScore, away: awayScore, probability };
+            if (probability > mostLikelyScore.probability) mostLikelyScore = { home: homeScore, away: awayScore, probability };
+          });
+        });
+
+        const predictedOutcome = Object.keys(outcomes).reduce((best, outcome) => outcomes[outcome] > outcomes[best] ? outcome : best);
+        return {
+          outcomes: asPercentages(outcomes),
+          predictedOutcome,
+          predictedScore: outcomeScores[predictedOutcome],
+          mostLikelyScore
+        };
+      };
+
+      const fullMatch = predictPeriod(homeGoals, awayGoals);
+      const firstHalf = predictPeriod(homeGoals * 0.45, awayGoals * 0.45);
+      const secondHalf = predictPeriod(homeGoals * 0.55, awayGoals * 0.55);
+
+      const noGoal = Math.exp(-(homeGoals + awayGoals));
+      const firstGoal = asPercentages({
+        home: homeGoals / (homeGoals + awayGoals) * (1 - noGoal),
+        away: awayGoals / (homeGoals + awayGoals) * (1 - noGoal),
+        none: noGoal
+      });
+
+      return {
+        homeName,
+        awayName,
+        home,
+        away,
+        homeGoals,
+        awayGoals,
+        outcomes: fullMatch.outcomes,
+        predictedOutcome: fullMatch.predictedOutcome,
+        predictedScore: fullMatch.predictedScore,
+        firstHalf,
+        secondHalf,
+        bothScore: Math.round((1 - Math.exp(-homeGoals)) * (1 - Math.exp(-awayGoals)) * 100),
+        firstGoal,
+        mostLikelyScore: fullMatch.mostLikelyScore
+      };
+    };
+
+    const predictionRecords = fixtures.map((fixture) => ({ fixture, prediction: predictMatch(fixture) }));
+
+    const outcomeLabel = (prediction) => prediction.predictedOutcome === "draw"
+      ? "Seri"
+      : `${prediction.predictedOutcome === "home" ? prediction.homeName : prediction.awayName} menang`;
+
+    document.querySelector("#prediction-list").innerHTML = predictionRecords.map(({ fixture, prediction }) => {
+      const [date, dateLabel, time] = fixture;
+      const homeOutcome = prediction.outcomes.home;
+      const drawOutcome = prediction.outcomes.draw;
+      const awayOutcome = prediction.outcomes.away;
+      const homeConcedes = prediction.firstGoal.away;
+      const awayConcedes = prediction.firstGoal.home;
+      const scoredFirst = prediction.firstGoal.home;
+      const visitorScoredFirst = prediction.firstGoal.away;
+      const noGoal = prediction.firstGoal.none;
+      const predictedOutcomeLabel = prediction.predictedOutcome === "draw"
+        ? "Seri"
+        : `${prediction.predictedOutcome === "home" ? prediction.homeName : prediction.awayName} menang`;
+      const predictedOutcomePercent = prediction.outcomes[prediction.predictedOutcome];
+
+      return `
+        <article class="prediction-card">
+          <div class="prediction-header">
+            <div class="prediction-fixture"><strong>${prediction.homeName}</strong><span>vs</span><strong>${prediction.awayName}</strong></div>
+            <div class="prediction-context">${dateLabel} · ${time} WIB<span>Keyakinan rendah · ${Math.min(prediction.home.played, prediction.away.played)} laga</span></div>
+          </div>
+          <div class="prediction-verdict"><div><span>Prediksi utama</span><strong>${predictedOutcomeLabel} · ${predictedOutcomePercent}%</strong></div></div>
+          <div class="prediction-result">
+            <div class="prediction-result-title"><span>Peluang hasil</span><span>Estimasi 1X2</span></div>
+            <div class="result-bar" aria-label="Peluang hasil ${homeOutcome}% tuan rumah, ${drawOutcome}% seri, ${awayOutcome}% tim tamu">
+              <span class="result-home" style="width:${homeOutcome}%"></span><span class="result-draw" style="width:${drawOutcome}%"></span><span class="result-away" style="width:${awayOutcome}%"></span>
+            </div>
+            <div class="result-key"><span>Tuan rumah<strong>${homeOutcome}%</strong></span><span>Seri<strong>${drawOutcome}%</strong></span><span>Tim tamu<strong>${awayOutcome}%</strong></span></div>
+          </div>
+          <div class="prediction-insights">
+            <div class="prediction-insight"><span>Estimasi gol</span><strong>${prediction.homeGoals.toFixed(1)} – ${prediction.awayGoals.toFixed(1)}</strong></div>
+            <div class="prediction-insight"><span>Skor sesuai prediksi utama</span><strong>${prediction.predictedScore.home} – ${prediction.predictedScore.away}</strong></div>
+            <div class="prediction-insight"><span>Kedua tim mencetak gol</span><strong>${prediction.bothScore}%</strong></div>
+            <div class="prediction-insight"><span>Gol pertama</span><strong>Rumah ${scoredFirst}% · Tamu ${visitorScoredFirst}% · 0–0 ${noGoal}%</strong></div>
+            <div class="prediction-insight"><span>Kebobolan lebih dulu</span><strong>${prediction.homeName} ${homeConcedes}% · ${prediction.awayName} ${awayConcedes}%</strong></div>
+            <div class="prediction-insight"><span>Pencetak gol pertama</span><strong class="unavailable">Belum ada data pemain</strong></div>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    const renderPeriodPredictions = (targetId, periodKey, periodLabel) => {
+      document.querySelector(`#${targetId}`).innerHTML = predictionRecords.map(({ fixture, prediction }) => {
+        const [, dateLabel, time, homeName, awayName] = fixture;
+        const period = prediction[periodKey];
+        const periodPrediction = { homeName, awayName, predictedOutcome: period.predictedOutcome };
+        const options = [
+          { key: "home", label: `${homeName} menang`, value: period.outcomes.home },
+          { key: "draw", label: "Seri", value: period.outcomes.draw },
+          { key: "away", label: `${awayName} menang`, value: period.outcomes.away }
+        ];
+
+        return `
+          <article class="outcome-card">
+            <div class="outcome-card-header">
+              <div><div class="outcome-fixture"><strong>${homeName}</strong><span>vs</span><strong>${awayName}</strong></div><div class="outcome-date">${periodLabel} · ${dateLabel} · ${time} WIB</div></div>
+              <div class="outcome-pick">Pilihan utama: ${outcomeLabel(periodPrediction)} · ${period.outcomes[period.predictedOutcome]}%</div>
+            </div>
+            <div class="outcome-options">
+              ${options.map(({ key, label, value }) => `<div class="outcome-option" data-selected="${key === period.predictedOutcome}"><span>${label}</span><strong>${value}%</strong></div>`).join("")}
+            </div>
+            <p class="period-note">Skor prediksi ${periodLabel.toLowerCase()}: ${period.predictedScore.home}–${period.predictedScore.away} · keyakinan rendah</p>
+          </article>
+        `;
+      }).join("");
+    };
+
+    renderPeriodPredictions("first-half-list", "firstHalf", "Babak pertama");
+    renderPeriodPredictions("second-half-list", "secondHalf", "Babak kedua");
+
+    const finalResults = {};
+    const fixtureKey = ([date, , , home, away]) => `${date}:${home}:${away}`;
+    const outcomeFromScore = (homeGoals, awayGoals) => homeGoals === awayGoals ? "draw" : homeGoals > awayGoals ? "home" : "away";
+    const predictionOutcomeName = (prediction, outcome = prediction.predictedOutcome) => outcome === "draw"
+      ? "seri"
+      : `${outcome === "home" ? prediction.homeName : prediction.awayName} menang`;
+
+    const renderReport = () => {
+      const reportRecords = predictionRecords.map(({ fixture, prediction }) => {
+        const result = finalResults[fixtureKey(fixture)];
+        const hasFinalScore = Number.isInteger(result?.homeGoals) && Number.isInteger(result?.awayGoals);
+        const hasFirstHalfScore = Number.isInteger(result?.firstHalfHomeGoals) && Number.isInteger(result?.firstHalfAwayGoals);
+        const secondHalfHomeGoals = hasFinalScore && hasFirstHalfScore ? result.homeGoals - result.firstHalfHomeGoals : null;
+        const secondHalfAwayGoals = hasFinalScore && hasFirstHalfScore ? result.awayGoals - result.firstHalfAwayGoals : null;
+        const hasSecondHalfScore = Number.isInteger(secondHalfHomeGoals) && Number.isInteger(secondHalfAwayGoals) && secondHalfHomeGoals >= 0 && secondHalfAwayGoals >= 0;
+        const actualOutcome = hasFinalScore ? outcomeFromScore(result.homeGoals, result.awayGoals) : null;
+        const outcomeStatus = !hasFinalScore ? "pending" : actualOutcome === prediction.predictedOutcome ? "correct" : "incorrect";
+        const exactScoreMatches = hasFinalScore && result.homeGoals === prediction.predictedScore.home && result.awayGoals === prediction.predictedScore.away;
+        const scoreStatus = !hasFinalScore ? "pending" : exactScoreMatches ? "correct" : "incorrect";
+        const firstHalfStatus = !hasFirstHalfScore ? "pending" : outcomeFromScore(result.firstHalfHomeGoals, result.firstHalfAwayGoals) === prediction.firstHalf.predictedOutcome ? "correct" : "incorrect";
+        const secondHalfStatus = !hasSecondHalfScore ? "pending" : outcomeFromScore(secondHalfHomeGoals, secondHalfAwayGoals) === prediction.secondHalf.predictedOutcome ? "correct" : "incorrect";
+        return { fixture, prediction, result, outcomeStatus, scoreStatus, firstHalfStatus, secondHalfStatus, secondHalfHomeGoals, secondHalfAwayGoals };
+      });
+
+      const reportCounts = reportRecords.reduce((counts, record) => {
+        if (record.outcomeStatus === "correct") counts.outcomeCorrect += 1;
+        if (record.outcomeStatus === "incorrect") counts.outcomeIncorrect += 1;
+        if (record.scoreStatus === "correct") counts.scoreCorrect += 1;
+        if (record.scoreStatus === "incorrect") counts.scoreIncorrect += 1;
+        if (record.firstHalfStatus === "correct") counts.firstHalfCorrect += 1;
+        if (record.firstHalfStatus === "incorrect") counts.firstHalfIncorrect += 1;
+        if (record.firstHalfStatus === "pending") counts.firstHalfPending += 1;
+        if (record.secondHalfStatus === "correct") counts.secondHalfCorrect += 1;
+        if (record.secondHalfStatus === "incorrect") counts.secondHalfIncorrect += 1;
+        if (record.secondHalfStatus === "pending") counts.secondHalfPending += 1;
+        return counts;
+      }, { outcomeCorrect: 0, outcomeIncorrect: 0, scoreCorrect: 0, scoreIncorrect: 0, firstHalfCorrect: 0, firstHalfIncorrect: 0, firstHalfPending: 0, secondHalfCorrect: 0, secondHalfIncorrect: 0, secondHalfPending: 0 });
+
+      document.querySelector("#report-outcome-correct").textContent = reportCounts.outcomeCorrect;
+      document.querySelector("#report-outcome-incorrect").textContent = reportCounts.outcomeIncorrect;
+      document.querySelector("#report-score-correct").textContent = reportCounts.scoreCorrect;
+      document.querySelector("#report-score-incorrect").textContent = reportCounts.scoreIncorrect;
+      document.querySelector("#report-first-correct").textContent = reportCounts.firstHalfCorrect;
+      document.querySelector("#report-first-incorrect").textContent = reportCounts.firstHalfIncorrect;
+      document.querySelector("#report-first-pending").textContent = reportCounts.firstHalfPending;
+      document.querySelector("#report-second-correct").textContent = reportCounts.secondHalfCorrect;
+      document.querySelector("#report-second-incorrect").textContent = reportCounts.secondHalfIncorrect;
+      document.querySelector("#report-second-pending").textContent = reportCounts.secondHalfPending;
+      document.querySelector("#report-list").innerHTML = reportRecords.map(({ fixture, prediction, result, outcomeStatus, scoreStatus, firstHalfStatus, secondHalfStatus, secondHalfHomeGoals, secondHalfAwayGoals }) => {
+        const [, dateLabel, , homeName, awayName] = fixture;
+        const statusLabels = { correct: "Cocok", incorrect: "Meleset", pending: "Menunggu" };
+        const actualScore = outcomeStatus === "pending" ? "Belum tersedia" : `${result.homeGoals} – ${result.awayGoals}`;
+        const firstHalfScore = firstHalfStatus === "pending" ? "Menunggu skor jeda" : `${result.firstHalfHomeGoals} – ${result.firstHalfAwayGoals}`;
+        const secondHalfScore = secondHalfStatus === "pending" ? "Menunggu skor akhir" : `${secondHalfHomeGoals} – ${secondHalfAwayGoals}`;
+        const outcomeMessage = outcomeStatus === "pending"
+          ? "Hasil Prediksi menunggu skor final."
+          : outcomeStatus === "correct"
+            ? `Hasil Prediksi cocok: ${predictionOutcomeName(prediction)}.`
+            : `Hasil Prediksi meleset: ${predictionOutcomeName(prediction)} tidak sesuai hasil akhir.`;
+        const scoreMessage = scoreStatus === "pending"
+          ? "Skor Rincian menunggu skor final."
+          : scoreStatus === "correct"
+            ? "Skor dari Rincian tepat."
+            : "Skor dari Rincian tidak tepat.";
+        const firstHalfMessage = firstHalfStatus === "pending"
+          ? "Babak pertama menunggu skor jeda."
+          : `Babak pertama ${firstHalfStatus === "correct" ? "cocok" : "meleset"}: ${predictionOutcomeName(prediction, prediction.firstHalf.predictedOutcome)}.`;
+        const secondHalfMessage = secondHalfStatus === "pending"
+          ? "Babak kedua menunggu skor jeda dan skor akhir."
+          : `Babak kedua ${secondHalfStatus === "correct" ? "cocok" : "meleset"}: ${predictionOutcomeName(prediction, prediction.secondHalf.predictedOutcome)}.`;
+
+        return `
+          <article class="report-entry">
+            <div class="report-entry-header">
+              <div class="report-fixture"><strong>${homeName}</strong><span>vs</span><strong>${awayName}</strong><span>· ${dateLabel}</span></div>
+              <div class="report-status-group"><span class="report-status" data-status="${outcomeStatus}">Hasil: ${statusLabels[outcomeStatus]}</span><span class="report-status" data-status="${scoreStatus}">Skor: ${statusLabels[scoreStatus]}</span><span class="report-status" data-status="${firstHalfStatus}">Babak I: ${statusLabels[firstHalfStatus]}</span><span class="report-status" data-status="${secondHalfStatus}">Babak II: ${statusLabels[secondHalfStatus]}</span></div>
+            </div>
+            <div class="report-details">
+              <div><span>Hasil Prediksi</span><strong>${predictionOutcomeName(prediction)}</strong></div>
+              <div><span>Skor Rincian</span><strong>${prediction.predictedScore.home} – ${prediction.predictedScore.away}</strong></div>
+              <div><span>Skor akhir</span><strong>${actualScore}</strong></div>
+            </div>
+            <div class="report-details report-period-details">
+              <div><span>Prediksi babak I</span><strong>${predictionOutcomeName(prediction, prediction.firstHalf.predictedOutcome)}</strong></div>
+              <div><span>Skor jeda</span><strong>${firstHalfScore}</strong></div>
+              <div><span>Prediksi babak II</span><strong>${predictionOutcomeName(prediction, prediction.secondHalf.predictedOutcome)}</strong></div>
+              <div><span>Skor babak II</span><strong>${secondHalfScore}</strong></div>
+            </div>
+            <p class="report-message">${outcomeMessage} ${scoreMessage} ${firstHalfMessage} ${secondHalfMessage}</p>
+          </article>
+        `;
+      }).join("");
+    };
+
+    const findFixtureFromResult = ({ date, homeName, awayName }) => fixtures.find(([fixtureDate, , , home, away]) =>
+      fixtureDate === date && home === homeName && away === awayName
+    );
+
+    document.addEventListener("match-half-time-updated", (event) => {
+      const detail = event.detail ?? {};
+      const { homeGoals, awayGoals } = detail;
+      const fixture = findFixtureFromResult(detail);
+      if (!fixture || !Number.isInteger(homeGoals) || !Number.isInteger(awayGoals) || homeGoals < 0 || awayGoals < 0) return;
+      finalResults[fixtureKey(fixture)] = {
+        ...finalResults[fixtureKey(fixture)],
+        firstHalfHomeGoals: homeGoals,
+        firstHalfAwayGoals: awayGoals
+      };
+      renderReport();
+    });
+
+    document.addEventListener("match-result-updated", (event) => {
+      const detail = event.detail ?? {};
+      const { homeGoals, awayGoals, status, firstHalfHomeGoals, firstHalfAwayGoals } = detail;
+      const fixture = findFixtureFromResult(detail);
+      if (!fixture || status !== "final" || !Number.isInteger(homeGoals) || !Number.isInteger(awayGoals)) return;
+      const currentResult = finalResults[fixtureKey(fixture)] ?? {};
+      finalResults[fixtureKey(fixture)] = {
+        ...currentResult,
+        homeGoals,
+        awayGoals,
+        ...(Number.isInteger(firstHalfHomeGoals) && Number.isInteger(firstHalfAwayGoals) ? { firstHalfHomeGoals, firstHalfAwayGoals } : {})
+      };
+      renderReport();
+    });
+
+    renderReport();
+
+    document.querySelector("#standings-body").innerHTML = standings.map((row, index) => {
+      const [team, played, wins, draws, losses, goalsFor, goalsAgainst, goalDifference, points, deduction = 0] = row;
+      const penalty = deduction ? `<span class="team-penalty">Pengurangan ${deduction} poin</span>` : "";
+      const goalClass = goalDifference < 0 ? "negative" : "";
+      const pointClass = points < 0 ? "points-cell negative" : "points-cell";
+      return `<tr><td>${index + 1}</td><td class="team-cell">${team}${penalty}</td><td>${played}</td><td>${wins}</td><td>${draws}</td><td>${losses}</td><td>${goalsFor}-${goalsAgainst}</td><td class="${goalClass}">${goalDifference > 0 ? `+${goalDifference}` : goalDifference}</td><td class="${pointClass}">${points}</td></tr>`;
+    }).join("");
+
+    const navItems = document.querySelectorAll(".nav-item");
+    const today = document.querySelector("#today");
+
+    today.textContent = new Intl.DateTimeFormat("id-ID", {
+      weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Jakarta"
+    }).format(new Date());
+
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const page = pages[item.dataset.page];
+        navItems.forEach((navItem) => navItem.removeAttribute("aria-current"));
+        item.setAttribute("aria-current", "page");
+        document.querySelector("#breadcrumb-page").textContent = page.label;
+        document.querySelector("#page-title").textContent = page.label;
+        document.querySelector("#page-description").textContent = page.description;
+        document.querySelector("#panel-title").textContent = page.panel;
+        document.querySelector("#panel-meta").textContent = page.meta;
+        document.querySelector("#source-note-text").innerHTML = page.sourceNote;
+        document.querySelector("#overview-grid").hidden = item.dataset.page !== "standings";
+        document.querySelector("#standings-view").hidden = item.dataset.page !== "standings";
+        document.querySelector("#live-view").hidden = item.dataset.page !== "live";
+        document.querySelector("#schedule-view").hidden = item.dataset.page !== "schedule";
+        document.querySelector("#predictions-view").hidden = item.dataset.page !== "predictions";
+        document.querySelector("#report-view").hidden = item.dataset.page !== "report";
+      });
+    });
+
+    const predictionTabs = document.querySelectorAll(".prediction-tab");
+    predictionTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        predictionTabs.forEach((tabItem) => tabItem.setAttribute("aria-selected", String(tabItem === tab)));
+        document.querySelectorAll("#predictions-view [role='tabpanel']").forEach((panel) => {
+          panel.hidden = panel.id !== tab.getAttribute("aria-controls");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
